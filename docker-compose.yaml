@@ -21,6 +21,9 @@ services:
       - default
     links:
       - postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
 networks:
     default:
         name: postgres-network
