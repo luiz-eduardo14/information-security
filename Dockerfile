@@ -1,6 +1,8 @@
-FROM maven:3.8.3-openjdk-17
+FROM openjdk:17-alpine
 WORKDIR /workspace/app
 
-COPY information-security/target/*.jar information-security.jar
+COPY target/*.jar information-security.jar
+
+EXPOSE 8080
 
 ENTRYPOINT ["java","-jar","information-security.jar"]
