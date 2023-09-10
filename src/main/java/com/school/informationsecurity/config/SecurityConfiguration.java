@@ -31,7 +31,8 @@ public class SecurityConfiguration {
         return httpSecurity
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/hello").permitAll()
-                        .requestMatchers("/api/auth").permitAll()
+                        .requestMatchers("/api/auth/signin").permitAll()
+                        .requestMatchers("/api/auth/signup").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().denyAll()
                 )
