@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -24,8 +25,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
@@ -33,20 +34,25 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)    
     private Long id;
+    @Nonnull
     private String password;
+    @Nonnull
+    @Column(unique = true)
     private String email;
     @Column(name = "first_name")
+    @Nonnull
     private String firstName;
     @Column(name = "last_name")
+    @Nonnull
     private String lastName;
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role = Role.GENERIC;
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private Status status = Status.INACTIVE;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority(Optional.ofNullable(role).map(Role::name).orElse(Role.GENERIC.name())));
     }
     @Override
     public boolean isAccountNonExpired() {
