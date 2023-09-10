@@ -1,4 +1,4 @@
-package com.school.informationsecurity.resources.authenticate;
+package com.school.informationsecurity.resources.authenticate.api;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthenticateResource {
+public class AuthenticateApiResource {
     private final AuthenticateService authenticateService;
 
     @PostMapping("/signin")
