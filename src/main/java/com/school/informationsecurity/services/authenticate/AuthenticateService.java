@@ -5,6 +5,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.school.informationsecurity.entities.Status;
 import com.school.informationsecurity.entities.User;
 import com.school.informationsecurity.repository.UserRepository;
 import com.school.informationsecurity.security.JwtTokenUtil;
@@ -24,6 +25,7 @@ public class AuthenticateService {
     public JwtResponseDTO signup(UserAuthenticationDTO dto) {
         User user = User.builder().firstName(dto.getFirstName()).lastName(dto.getLastName())
                 .email(dto.getEmail()).password(passwordEncoder.encode(dto.getPassword()))
+                .status(Status.ACTIVE)
                 .build();
         userRepository.save(user);
         String jwt = jwtService.generateToken(user);
@@ -34,7 +36,7 @@ public class AuthenticateService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
         User user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+                .orElseThrow(() -> new IllegalArgumentException("Invalid email"));
         String jwt = jwtService.generateToken(user);
         return JwtResponseDTO.builder().token(jwt).build();
     }
