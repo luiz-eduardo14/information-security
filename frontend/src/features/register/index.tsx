@@ -1,11 +1,10 @@
-import { useForm } from "react-hook-form"
-import "../style/form/style.css"
-import { useNavigate } from "react-router"
+import { useForm } from "react-hook-form";
+import "../style/form/style.css";
 import { FormTextInput } from "../components/FormTextInput";
+import { Link } from "react-router-dom";
 export function Register() {
 
     const { handleSubmit } = useForm();
-    const navigate = useNavigate();
 
     return <section className="container forms">
                 <div className="form login">
@@ -23,7 +22,7 @@ export function Register() {
                             </div>
                         </form>
                         <div className="form-link">
-                            <span>Don't have an account? <a href="#" className="link signup-link" onClick={() => navigate('/signup')}>Signup</a></span>
+                            <span>Have an account? <Link to="/signin" className="link signup-link">Signin</Link></span>
                         </div>
                     </div>
                 </div>

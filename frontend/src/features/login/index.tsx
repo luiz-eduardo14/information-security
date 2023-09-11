@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form"
 import "../style/form/style.css"
 import { FormTextInput } from "../components/FormTextInput"
+import { Link } from "react-router-dom";
 export function Login() {
 
     const { handleSubmit } = useForm();
@@ -19,7 +20,7 @@ export function Login() {
                             </div>
                         </form>
                         <div className="form-link">
-                            <span>Don't have an account? <a href="#" className="link signup-link">Signup</a></span>
+                            <span>Don't have an account? <Link to="/signup" className="link signup-link">Signup</Link></span>
                         </div>
                     </div>
                 </div>
