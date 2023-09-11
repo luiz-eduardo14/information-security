@@ -5,6 +5,7 @@ type FormTextInputProps = {
     type: string;
     placeholder: string;
     name: string;
+    required?: boolean;
 }
 
 export function FormTextInput({
@@ -12,12 +13,13 @@ export function FormTextInput({
     placeholder,
     name,
     children,
+    required = false
 }: PropsWithChildren<FormTextInputProps>): ReactNode {
 
     const { register } = useForm();
     
     return <div className="field input-field">
-                <input type={type} placeholder={placeholder} className="input" {...register(name)}/>
+                <input type={type} placeholder={placeholder} className="input" {...register(name)} required={required}/>
                 {children}
             </div>
 } 
