@@ -1,7 +1,9 @@
 package com.school.informationsecurity.security;
 
 import java.io.IOException;
+import java.util.Objects;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +32,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
+        final String authHeader = ObjectUtils.firstNonNull(
+            getJwtFromCookie(request),
+            request.getHeader("Authorization")
+        );
         final String jwt;
         final String userEmail;
         if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, "Bearer ")) {
@@ -49,8 +55,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 context.setAuthentication(authToken);
                 SecurityContextHolder.setContext(context);
+                Cookie jwtCookie = new Cookie("jwt", jwt);
+                jwtCookie.setHttpOnly(true);
+                response.addCookie(jwtCookie);
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private String getJwtFromCookie(HttpServletRequest request) {
+        for (Cookie cookie : request.getCookies()) {
+            if (cookie.getName().equals("jwt") && cookie.isHttpOnly()) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 }
