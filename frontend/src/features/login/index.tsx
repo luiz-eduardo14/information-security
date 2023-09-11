@@ -3,7 +3,7 @@ import "../style/form/style.css"
 import { FormTextInput } from "../components/FormTextInput"
 export function Login() {
 
-    const { handleSubmit } = useForm()
+    const { handleSubmit } = useForm();
 
     return <section className="container forms">
                 <div className="form login">
