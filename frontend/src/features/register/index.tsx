@@ -5,16 +5,20 @@ import { Link } from "react-router-dom";
 import { useQuery } from "react-query";
 import { CircleLoader } from "react-spinners";
 import { fetchApi } from "../services/api";
+import { toast } from 'react-toastify';
 export function Register() {
 
     const { handleSubmit } = useForm();
 
-    const { isLoading, error, data } = useQuery({
+    const { isLoading } = useQuery({
         queryFn: () => fetchApi({
             url: 'api/auth/signup',
             method: 'POST'
         }),
         queryKey: 'signup',
+        onError: () => {
+            toast.error('Something went wrong. Please try again later.');
+        }
     });
 
     return (
