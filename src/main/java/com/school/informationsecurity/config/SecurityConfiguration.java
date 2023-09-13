@@ -2,6 +2,7 @@ package com.school.informationsecurity.config;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,31 +34,37 @@ public class SecurityConfiguration {
     private final UserDetailsService userDetailsService;
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity httpSecurity, AuthenticationProvider authenticationProvider) throws Exception {
+    SecurityFilterChain filterChain(
+        HttpSecurity httpSecurity, 
+        AuthenticationProvider authenticationProvider, 
+        @Qualifier("customCorsConfiguration") CorsConfiguration corsConfiguration
+    ) throws Exception {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/signin").permitAll()
-                        .requestMatchers("/api/auth/signup").permitAll()
+                        .requestMatchers("api/auth/signin").permitAll()
+                        .requestMatchers("api/auth/signup").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .cors(e -> e.disable())
+                .cors(cors -> cors.configurationSource(request -> corsConfiguration))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
-    @Bean
-    public CorsFilter corsFilter() {
+    @Bean(name = "customCorsConfiguration")
+    CorsConfiguration customCorsConfiguration() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
         config.addAllowedOrigin("*");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
-        source.registerCorsConfiguration("/**", config);
         config.setExposedHeaders(List.of("Authorization"));
-        return new CorsFilter(source);
+        source.registerCorsConfiguration("/**", config);
+
+        return config;
     }
 
     @Bean
