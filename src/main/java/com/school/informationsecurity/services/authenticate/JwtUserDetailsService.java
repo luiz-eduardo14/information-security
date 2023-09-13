@@ -1,4 +1,4 @@
-package com.school.informationsecurity.security.services;
+package com.school.informationsecurity.services.authenticate;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
