@@ -1,45 +1,52 @@
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import "../style/form/style.css";
-import { FormTextInput } from "../components/FormTextInput";
-import { Link } from "react-router-dom";
-import { useQuery } from "react-query";
+import { FormTextInput } from "../../components/FormTextInput";
+import { Link, useNavigate } from "react-router-dom";
 import { CircleLoader } from "react-spinners";
-import { fetchApi } from "../services/api";
-import { toast } from 'react-toastify';
+import { RegisterFormFields } from "./types";
+import useFetch from "../../hooks/useFetch";
+import { registerRequest } from "../../services/auth";
+import { Toast } from "../../utils/Toast";
+
 export function Register() {
 
-    const { handleSubmit } = useForm();
+    const form = useForm<RegisterFormFields>();
 
-    const { isLoading } = useQuery({
-        queryFn: () => fetchApi({
-            url: 'api/auth/signup',
-            method: 'POST'
-        }),
-        queryKey: 'signup',
-        onError: () => {
-            toast.error('Something went wrong. Please try again later.');
+    const navigate = useNavigate();
+
+    const [{
+        isLoading,
+    } ,register] = useFetch(registerRequest, null, false, null,
+        () => {            
+            Toast.showErrorMessage('Email already exists');
+        }, 
+        () => {
+            Toast.showSuccessMessage('Account created successfully');
+            navigate('/signin');
         }
-    });
+    );
 
     return (
             <section className="container forms">
                     <div className="form login">
                         <div className="form-content">
                                 <header>Register</header>
-                                <form onSubmit={handleSubmit((data) => console.log(data))}>
-                                    <FormTextInput type="email" placeholder="Email" name="email" required />
-                                    <FormTextInput type="password" placeholder="Password" name="password" required>
-                                        <i className='bx bx-hide eye-icon'></i>
-                                    </FormTextInput>
-                                    <FormTextInput type="text" placeholder="First Name" name="firstName" required />
-                                    <FormTextInput type="text" placeholder="Last Name" name="lastName" required />
-                                    <div className="field button-field">
-                                        <button disabled={isLoading}>
-                                            {isLoading && <span><CircleLoader loading={!isLoading} size={15} /></span>}
-                                            {!isLoading && <span>Signup</span>}
-                                        </button>
-                                    </div>
-                                </form>
+                                <FormProvider {...form}>
+                                    <form onSubmit={form.handleSubmit(register)}>
+                                        <FormTextInput type="email" placeholder="Email" name="email" required />
+                                        <FormTextInput type="password" placeholder="Password" name="password" required >
+                                            <i className='bx bx-hide eye-icon'></i>
+                                        </FormTextInput>
+                                        <FormTextInput type="text" placeholder="First Name" name="firstName" required />
+                                        <FormTextInput type="text" placeholder="Last Name" name="lastName" required />
+                                        <div className="field button-field">
+                                            <button disabled={isLoading}>
+                                                {isLoading && <span><CircleLoader loading={!isLoading} size={15} /></span>}
+                                                {!isLoading && <span>Signup</span>}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </FormProvider>
                                 <div className="form-link">
                                     {!isLoading && 
                                         <span>Have an account?
