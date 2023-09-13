@@ -1,7 +1,7 @@
 import { ApiResponse, create } from 'apisauce';
 import { Storage } from '../utils';
-import { toast } from 'react-toastify';
 import { AxiosRequestConfig } from 'axios';
+import { Toast } from '../utils/Toast';
 
 const url = import.meta.env.VITE_API_URL || '';
 
@@ -27,30 +27,30 @@ export function setHeaderRequest(request: AxiosRequestConfig) {
 const generateResponseTransform = () => async (response: ApiResponse<any>) => {
   if (!response.ok) {
     if (response.status === 401) {
-        toast.error(
+        Toast.showErrorMessage(
         response?.data?.error ||
           'É necessário estar autenticado para utilizar esse serviço.'
       );
-      if (window.location.pathname !== '/login') (window.location as any) = '/logout';
+      if (window.location.pathname !== '/signin') (window.location as any) = '/logout';
     } else {
-      try {
-        const blobResponse = JSON.parse(
-          (await response?.data?.text?.()) || '{}'
-        );
-        toast.error(
-          translateRequestErrorResponse(
-            response?.data?.detail ||
-              response?.data?.title ||
-              response?.data.error ||
-              blobResponse?.error ||
-              blobResponse?.message ||
-              blobResponse?.title ||
-              'Erro interno no servidor.'
-          )
-        );
-      } catch {
-        toast.error('Erro interno no servidor.');
-      }
+      // try {
+      //   const blobResponse = JSON.parse(
+      //     (await response?.data?.text?.()) || '{}'
+      //   );
+      //   Toast.showErrorMessage(
+      //     translateRequestErrorResponse(
+      //       response?.data?.detail ||
+      //         response?.data?.title ||
+      //         response?.data?.error ||
+      //         blobResponse?.error ||
+      //         blobResponse?.message ||
+      //         blobResponse?.title ||
+      //         'Erro interno no servidor.'
+      //     )
+      //   );
+      // } catch (e) {
+      //   Toast.showErrorMessage('Erro interno no servidor.');
+      // }
     }
   }
   return null;
