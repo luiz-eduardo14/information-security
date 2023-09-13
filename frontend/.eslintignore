@@ -1,0 +1,8 @@
+/scripts/
+/node_modules/
+/public/
+config-overrides.js
+/src/setupProxy.js
+*.svg
+svg-loader.js
+tsconfig.json
