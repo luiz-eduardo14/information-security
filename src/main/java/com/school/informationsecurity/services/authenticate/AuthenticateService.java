@@ -1,5 +1,11 @@
 package com.school.informationsecurity.services.authenticate;
 
+import java.security.Key;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+
+import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,10 +28,21 @@ public class AuthenticateService {
     private final JwtTokenUtil jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public JwtResponseDTO signup(UserAuthenticationDTO dto) {
+    public JwtResponseDTO signup(UserAuthenticationDTO dto) throws NoSuchAlgorithmException {
+
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+
+        kpg.initialize(2048);
+
+        KeyPair kp = kpg.genKeyPair();
+        Key publicKey = kp.getPublic();
+        Key privateKey = kp.getPrivate();
+
         User user = User.builder().firstName(dto.getFirstName()).lastName(dto.getLastName())
                 .email(dto.getEmail()).password(passwordEncoder.encode(dto.getPassword()))
                 .status(Status.ACTIVE)
+                .publicKey(publicKey.getEncoded())
+                .privateKey(privateKey.getEncoded())
                 .build();
         userRepository.save(user);
         String jwt = jwtService.generateToken(user);

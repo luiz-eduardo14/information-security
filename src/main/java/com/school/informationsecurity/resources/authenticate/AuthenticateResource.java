@@ -21,7 +21,7 @@ public class AuthenticateResource {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<JwtResponseDTO> signup(@RequestBody UserAuthenticationDTO userAuthenticationDTO) {
+    public ResponseEntity<JwtResponseDTO> signup(@RequestBody UserAuthenticationDTO userAuthenticationDTO) throws Exception {
       return ResponseEntity.ok(authenticateService.signup(userAuthenticationDTO));
     }
 }
