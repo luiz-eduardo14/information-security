@@ -2,7 +2,7 @@
 	box-sizing:border-box;
 }
 body{
-	background-color:#abd9e9;
+    background-color: #4070f4;
 	font-family:Arial;
 }
 #container{
@@ -54,7 +54,7 @@ aside ul{
 	padding-left:0;
 	margin:0;
 	list-style-type:none;
-	overflow-y:scroll;
+	/* overflow-y:scroll; */
 	height:690px;
 }
 aside li{
@@ -227,4 +227,23 @@ main footer a{
 	margin-left:333px;
 	margin-top:5px;
 	display:inline-block;
+}
+
+
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+::-webkit-scrollbar-track {
+	border-radius: 10px;
+	background: linear-gradient(left, #212121, #323232);
+	box-shadow: 0 0 1px 1px #111;
+}
+::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	background: black;
+	box-shadow: inset 0 0 1px 1px #191919;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(left, #555555, #4e4e4e);
 }
