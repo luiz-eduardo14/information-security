@@ -1,11 +1,11 @@
 package com.school.informationsecurity.services.authenticate;
 
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 
-import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +20,10 @@ import com.school.informationsecurity.services.authenticate.dto.UserAuthenticati
 
 import lombok.RequiredArgsConstructor;
 
+import javax.crypto.*;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticateService {
@@ -28,7 +32,7 @@ public class AuthenticateService {
     private final JwtTokenUtil jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public JwtResponseDTO signup(UserAuthenticationDTO dto) throws NoSuchAlgorithmException {
+    public JwtResponseDTO signup(UserAuthenticationDTO dto) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidKeySpecException {
 
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
 
@@ -38,11 +42,23 @@ public class AuthenticateService {
         Key publicKey = kp.getPublic();
         Key privateKey = kp.getPrivate();
 
-        User user = User.builder().firstName(dto.getFirstName()).lastName(dto.getLastName())
+        String passwordHash = passwordEncoder.encode(dto.getPassword());
+
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+
+        Key keyPassword = this.generateKey(passwordHash);
+
+        cipher.init(Cipher.ENCRYPT_MODE, keyPassword);
+
+        byte[] encryptedPrivateKey = cipher.doFinal(privateKey.getEncoded());
+
+        User user = User.builder()
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName())
                 .email(dto.getEmail()).password(passwordEncoder.encode(dto.getPassword()))
                 .status(Status.ACTIVE)
                 .publicKey(publicKey.getEncoded())
-                .privateKey(privateKey.getEncoded())
+                .privateKey(encryptedPrivateKey)
                 .build();
         userRepository.save(user);
         String jwt = jwtService.generateToken(user);
@@ -56,5 +72,13 @@ public class AuthenticateService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email"));
         String jwt = jwtService.generateToken(user);
         return JwtResponseDTO.builder().token(jwt).build();
+    }
+
+    private Key generateKey(String value) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        KeySpec spec = new PBEKeySpec(value.toCharArray(), "salt".getBytes(StandardCharsets.UTF_8), 65536, 256);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+
+        return new SecretKeySpec(factory.generateSecret(spec)
+                .getEncoded(), "AES");
     }
 }
