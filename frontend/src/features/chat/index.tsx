@@ -1,7 +1,7 @@
-import "../style/chat/style.css"
+import "../style/chat/style.css";
 import { ChatConversation } from "./components/ChatConversation";
 import { ChatHeader } from "./components/ChatHeader";
-import { PersonCardProvider } from "./components/PersonCardProvider"
+import { PersonCardProvider } from "./components/PersonCardProvider";
 import { Search } from "./components/Search";
 
 const PersonCardDataMock = [
@@ -21,6 +21,7 @@ const PersonCardDataMock = [
 ];
 
 export function Chat() {
+
     return (
 	<div style={{
 		paddingTop: "50px",
