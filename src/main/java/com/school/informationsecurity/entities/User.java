@@ -1,17 +1,12 @@
 package com.school.informationsecurity.entities;
 
-import java.sql.Blob;
-import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.annotations.JdbcTypeCode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.Column;
@@ -21,7 +16,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

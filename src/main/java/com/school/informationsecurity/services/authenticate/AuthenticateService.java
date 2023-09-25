@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.school.informationsecurity.entities.Role;
 import com.school.informationsecurity.entities.Status;
 import com.school.informationsecurity.entities.User;
 import com.school.informationsecurity.repository.UserRepository;
@@ -32,7 +33,7 @@ public class AuthenticateService {
     private final JwtTokenUtil jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public JwtResponseDTO signup(UserAuthenticationDTO dto) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, InvalidKeySpecException {
+    public JwtResponseDTO signup(UserAuthenticationDTO dto) throws Exception {
 
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
 
@@ -59,6 +60,7 @@ public class AuthenticateService {
                 .status(Status.ACTIVE)
                 .publicKey(publicKey.getEncoded())
                 .privateKey(encryptedPrivateKey)
+                .role(Role.USER)
                 .build();
         userRepository.save(user);
         String jwt = jwtService.generateToken(user);
@@ -67,7 +69,7 @@ public class AuthenticateService {
 
     public JwtResponseDTO signin(UserAuthenticationDTO dto) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+            new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email"));
         String jwt = jwtService.generateToken(user);

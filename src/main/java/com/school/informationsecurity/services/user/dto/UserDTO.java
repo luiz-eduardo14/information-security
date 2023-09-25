@@ -1,5 +1,7 @@
 package com.school.informationsecurity.services.user.dto;
 
+import com.school.informationsecurity.entities.Role;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,4 +16,5 @@ public class UserDTO {
     private String firstName;
     private String lastName;
     private String password;
+    private Role role;
 }

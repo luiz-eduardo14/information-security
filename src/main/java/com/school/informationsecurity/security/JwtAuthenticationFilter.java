@@ -1,9 +1,11 @@
 package com.school.informationsecurity.security;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.mapping.List;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -26,18 +28,26 @@ import lombok.RequiredArgsConstructor;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtService;
     private final UserDetailsService userService;
+    private final Integer SUBSTRING_BEARER_INDEX = 7;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        final String authHeader = ObjectUtils.firstNonNull(
+
+        String authHeader = ObjectUtils.firstNonNull(
             getJwtFromCookie(request),
-            request.getHeader("Authorization")
+            request.getHeader("Authorization"),
+            request.getParameter("jwt")
         );
+        
+        if (authHeader != null && !authHeader.startsWith("Bearer ")) {
+            authHeader = "Bearer " + authHeader;
+        }
+
         final String jwt;
         final String userEmail;
-        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, "Bearer ")) {
+        if (authHeader == null || StringUtils.isEmpty(authHeader)) {
             filterChain.doFilter(request, response);
             return;
         }
