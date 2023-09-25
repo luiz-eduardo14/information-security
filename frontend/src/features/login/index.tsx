@@ -6,13 +6,25 @@ import { Toast } from "../../utils/Toast";
 import useFetch from "../../hooks/useFetch";
 import { loginRequest } from "../../services/auth";
 import { RegisterFormFields } from "../register/types";
+import { useAuthentication } from "../../hooks/useAuthentication";
 export function Login() {
 
     const form = useForm<Omit<RegisterFormFields, "firstName" | "lastName">>();
 
+    const {
+        saveToken,
+    } = useAuthentication();
+
     const [, login] = useFetch(loginRequest, null, false, null, 
         () => Toast.showErrorMessage("Invalid credentials"), 
-        () => Toast.showSuccessMessage('Logged in successfully')
+        response => {
+            if (!response?.data?.token) {
+                Toast.showErrorMessage("Invalid credentials");
+                return;
+            }
+            saveToken(response.data.token);
+            Toast.showSuccessMessage('Logged in successfully');
+        }
     );
 
     return <section className="container forms">

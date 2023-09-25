@@ -21,7 +21,6 @@ const PersonCardDataMock = [
 ];
 
 export function Chat() {
-
     return (
 	<div style={{
 		paddingTop: "50px",
