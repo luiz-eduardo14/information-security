@@ -1,8 +1,11 @@
 import { QueryClient, QueryClientProvider } from "react-query";
-import { Router } from "./router";
 import { ToastContainer } from "react-toastify";
 import store from "./store";
 import { Provider } from "react-redux";
+import { AuthProvider } from "./context/AuthContext";
+import { PropsWithChildren } from "react";
+import { BrowserRouter } from "react-router-dom";
+import { SocketProvider } from "./context/SocketContext";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -17,23 +20,31 @@ const queryClient = new QueryClient({
     }
 });
 
-export function Providers() {
+export function Providers({
+  children
+}: PropsWithChildren<object> ) {
     return (
     <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-          <Router />
-          <ToastContainer
-                    position="top-right"
-                    autoClose={3000}
-                    hideProgressBar
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss={false}
-                    draggable={false}
-                    pauseOnHover
-          />
-      </QueryClientProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <SocketProvider>
+            <QueryClientProvider client={queryClient}>
+                <ToastContainer
+                          position="top-right"
+                          autoClose={3000}
+                          hideProgressBar
+                          newestOnTop={false}
+                          closeOnClick
+                          rtl={false}
+                          pauseOnFocusLoss={false}
+                          draggable={false}
+                          pauseOnHover
+                />
+                {children}
+            </QueryClientProvider>
+          </SocketProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </Provider>
     )
 }
