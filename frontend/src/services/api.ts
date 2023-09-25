@@ -10,13 +10,6 @@ const api = create({
   timeout: 30000,
 });
 
-function translateRequestErrorResponse(message: string) {
-  if (message === 'Access is denied') {
-    return 'Você não possui acesso suficiente para utilizar esse serviço.';
-  }
-  return message;
-}
-
 export function setHeaderRequest(request: AxiosRequestConfig) {
   const token = localStorage.getItem(Storage.TOKEN);
   if (token && request?.headers) {
