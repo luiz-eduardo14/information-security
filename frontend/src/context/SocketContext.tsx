@@ -1,44 +1,44 @@
-import { createContext, useCallback, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { useAuthentication } from '../hooks/useAuthentication';
-import SockJS from 'sockjs-client/dist/sockjs';
-import Stomp from 'stompjs'
+import { Client } from '@stomp/stompjs';
 
-const url = import.meta.env.VITE_API_URL || '';
+const url = import.meta.env.VITE_SOCKET_URL || '';
 
-const SocketContext = createContext({} as Stomp.Client | null);
+const SocketContext = createContext(null as Client | null);
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
 
   const {
-    token,
     authenticated,
     ready,
   } = useAuthentication();
 
-  const [stompClient, setStompClient] = useState<Stomp.Client | null>(null);
-
-  const generateSocket = useCallback(() => {    
-    const socket = new SockJS(`${url}/chat?jwt=${token}`);
-    return Stomp.over(socket);
-    }, [token]);
+  const [stompClient, setStompClient] = useState<Client | null>(null);
 
   useEffect(() => {
     if (authenticated && ready) {
       try {
-        const StompClientInstance = !stompClient?.connected ? generateSocket() : stompClient;
-        setStompClient(StompClientInstance);
-        if (!StompClientInstance.connected) {
-          const headers = {
-              Authorization: `Bearer ${token}`,
-          };
-          StompClientInstance.connect(headers, () => alert('connected'), e => alert(e));
-        }
+        const stompClient = new Client({
+          brokerURL: `${url}/chat`,
+          connectHeaders: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'X-Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+          onConnect: () => {
+            setStompClient(stompClient);
+            alert('Connected');
+          },
+          onDisconnect: () => {
+            alert('Disconnected');
+          }
+        });
+        stompClient.activate();
       } catch (e) {
         console.error(e);
       }
     }
     return () => {
-      stompClient?.disconnect(() => alert('disconnected'));
+      stompClient?.deactivate();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [authenticated]);
