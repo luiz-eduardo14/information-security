@@ -23,10 +23,12 @@
     "react-spinners": "^0.13.8",
     "react-toastify": "^9.1.3",
     "react-use-websocket": "^4.4.0",
-    "sockjs-client": "^1.6.1"
+    "sockjs-client": "^1.6.1",
+    "stompjs": "^2.3.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
+    "@types/stompjs": "^2.3.5",
     "@types/react-dom": "^18.2.7",
     "@types/react-redux": "^7.1.26",
     "@types/sockjs-client": "^1.5.1",

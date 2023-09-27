@@ -11,6 +11,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   const {
     authenticated,
     ready,
+    token,
   } = useAuthentication();
 
   const [stompClient, setStompClient] = useState<Client | null>(null);
@@ -19,7 +20,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     if (authenticated && ready) {
       try {
         const stompClient = new Client({
-          brokerURL: `${url}/chat`,
+          brokerURL: `${url}/socket?jwt=${token}`,
           connectHeaders: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
             'X-Authorization': `Bearer ${localStorage.getItem('token')}`,

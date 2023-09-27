@@ -39,12 +39,12 @@ public class SecurityConfiguration {
         @Qualifier("customCorsConfiguration") CorsConfiguration corsConfiguration
     ) throws Exception {
         return httpSecurity
-                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("api/auth/signin").permitAll()
                         .requestMatchers("api/auth/signup").permitAll()
                         .anyRequest().authenticated()
                 )
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(request -> corsConfiguration))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authenticationProvider(authenticationProvider)
