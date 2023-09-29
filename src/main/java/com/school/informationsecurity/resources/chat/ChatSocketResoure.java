@@ -17,7 +17,7 @@ public class ChatSocketResoure {
     private final SimpMessagingTemplate messagingTemplate;
     
     @MessageMapping("/chat")
-    @SendToUser("/chat")
+    @SendToUser("/topic/chat")
     public String chat(Message message, Principal principal) {
         System.out.println("username: " + principal.getName());
         return "";
