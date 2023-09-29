@@ -27,10 +27,9 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
           },
           onConnect: () => {
             setStompClient(stompClient);
-            alert('Connected');
           },
           onDisconnect: () => {
-            alert('Disconnected');
+            console.log('websocket disconnected');
           }
         });
         stompClient.activate();
