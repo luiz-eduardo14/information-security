@@ -2,6 +2,8 @@ package com.school.informationsecurity.entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "message")
 public class Message {
@@ -17,6 +19,8 @@ public class Message {
     private MESSAGE_TYPE messageType;
 
     private String sender;
+
+    private LocalDate date;
 
     enum MESSAGE_TYPE {
         TEXT,
