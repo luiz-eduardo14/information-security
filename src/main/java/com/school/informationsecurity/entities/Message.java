@@ -12,13 +12,11 @@ public class Message {
     @Column(name = "message")
     private byte[] message;
 
-    @Column(name = "message_type")
+    @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private MESSAGE_TYPE messageType;
 
-    @OneToOne
-    @JoinColumn(name = "sender_id")
-    private User user;
+    private String sender;
 
     enum MESSAGE_TYPE {
         TEXT,
