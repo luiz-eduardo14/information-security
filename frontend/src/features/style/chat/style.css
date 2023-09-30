@@ -93,7 +93,7 @@ aside li h3{
 	height:8px;
 	border-radius:50%;
 	display:inline-block;
-	margin-right:7px;
+	margin-right: 2px;
 }
 .green{
 	background-color:#58b666;
@@ -103,8 +103,6 @@ aside li h3{
 }
 .blue{
 	background-color:#6fbced;
-	margin-right:0;
-	margin-left:7px;
 }
 
 main header{
@@ -156,9 +154,23 @@ main header h3{
 #chat h3{
 	color:#bbb;
 }
-#chat .entete{
+#chat .entete {
 	margin-bottom:5px;
+	display: flex;
+	flex-direction: row;
+	text-align: right;
+	align-items: center;
+	gap: 4px;
 }
+
+#chat .me .entete{
+	justify-content: end;
+}
+
+#chat .you .entete{
+	justify-content: start;
+}
+
 #chat .message{
 	padding:20px;
 	color:#fff;
@@ -172,10 +184,10 @@ main header h3{
 	text-align:right;
 }
 #chat .you .message{
-	background-color:#58b666;
+	background-color:#6fbced;
 }
 #chat .me .message{
-	background-color:#6fbced;
+	background-color:#58b666;
 }
 #chat .triangle{
 	width: 0;
@@ -184,12 +196,12 @@ main header h3{
 	border-width: 0 10px 10px 10px;
 }
 #chat .you .triangle{
-		border-color: transparent transparent #58b666 transparent;
-		margin-left:15px;
+	border-color: transparent transparent #6fbced transparent;
+	margin-left:15px;
 }
 #chat .me .triangle{
-		border-color: transparent transparent #6fbced transparent;
-		margin-left:375px;
+	border-color: transparent transparent #58b666 transparent;
+	margin-left:375px;
 }
 
 main footer{
