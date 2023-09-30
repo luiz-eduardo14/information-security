@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
 import { useAuthentication } from '../hooks/useAuthentication';
 import { Client } from '@stomp/stompjs';
+import socketEvents from '../socket/events'
 
 const url = import.meta.env.VITE_SOCKET_URL || '';
 
@@ -29,7 +30,10 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
             setStompClient(stompClient);
           },
           onDisconnect: () => {
-            console.log('websocket disconnected');
+            setStompClient(null);
+          },
+          onUnhandledMessage: (message) => {
+            console.log(message?.body);
           }
         });
         stompClient.activate();
@@ -42,6 +46,18 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [authenticated]);
+
+  useEffect(() => {
+    if (stompClient && stompClient?.connected) {
+      socketEvents.forEach((event) => stompClient.subscribe(event.eventSubscribeMapping, event.callback));
+    }
+
+    return () => {
+      if (stompClient) {
+        socketEvents.forEach((event) => stompClient.unsubscribe(event.eventSubscribeMapping));
+      }
+    }
+  }, [stompClient]);
 
   return (
     <SocketContext.Provider value={stompClient}>
