@@ -5,7 +5,7 @@ import socketEvents from '../socket/events'
 
 const url = import.meta.env.VITE_SOCKET_URL || '';
 
-const SocketContext = createContext(null as Client | null);
+export const SocketContext = createContext(null as Client | null);
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
 
@@ -32,8 +32,8 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
           onDisconnect: () => {
             setStompClient(null);
           },
-          onUnhandledMessage: (message) => {
-            console.log(message?.body);
+          onUnhandledMessage: () => {
+            
           }
         });
         stompClient.activate();
@@ -53,7 +53,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     }
 
     return () => {
-      if (stompClient) {
+      if (stompClient && stompClient?.connected) {
         socketEvents.forEach((event) => stompClient.unsubscribe(event.eventSubscribeMapping));
       }
     }
