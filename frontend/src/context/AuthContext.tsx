@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }: PropsWithChildren<object>) => {
         fetchMe
       }}
     >
-      {ready && children}
+      {children}
     </AuthContext.Provider>
   );
 };

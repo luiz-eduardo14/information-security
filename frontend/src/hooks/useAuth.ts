@@ -36,9 +36,9 @@ export default function useAuth(): useAuthReturn {
         navigate('/login');
     }, [navigate]);
         
-    const fetchMe = useCallback(async () => {
+    const fetchMe = useCallback(async (tokenParam?: string | null) => {
         try {
-            const token = localStorage.getItem(Storage.TOKEN);
+            const token = tokenParam ?? localStorage.getItem(Storage.TOKEN);
             if (!token) throw new Error('Token not found');
             const response = await meRequest(null, token);
             if (!response.ok) throw new Error('Invalid token');
@@ -60,10 +60,11 @@ export default function useAuth(): useAuthReturn {
     }, []);
 
     useEffect(() => {
-        if (!token) return;
-        fetchMe();
+        if (token && !authenticated && !ready) {
+            fetchMe(token);
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [token]);
+    }, [token, ready]);
 
     return {
         token,

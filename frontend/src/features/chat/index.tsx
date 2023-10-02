@@ -14,6 +14,7 @@ import { useAuthentication } from "../../hooks/useAuthentication";
 export function Chat() {
 
 	const socket = useSocket();
+	
 	const [textArea, setTextArea] = useState<string | null>(null);
 
 	const [{data: personList, isLoading}] = useFetch(getAllUsersRequest, null, true, []);

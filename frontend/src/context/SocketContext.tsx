@@ -45,7 +45,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       stompClient?.deactivate();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [authenticated]);
+    }, [authenticated]);    
 
   useEffect(() => {
     if (stompClient && stompClient?.connected) {
