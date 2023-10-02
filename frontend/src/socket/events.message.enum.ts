@@ -1,3 +1,3 @@
 export enum EventMessageMapping {
-    CHAT = '/chat',
+    CHAT = '/app/chat',
 }

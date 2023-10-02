@@ -1,3 +1,3 @@
 export enum EventSubscribeMapping {
-    CHAT = '/topic/chat',
+    CHAT = '/user/topic/chat',
 }

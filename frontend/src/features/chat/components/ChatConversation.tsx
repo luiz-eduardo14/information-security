@@ -1,72 +1,65 @@
+import { useEffect } from "react";
+import useFetch from "../../../hooks/useFetch";
+import { getAllMessagesByReceiverRequest } from "../../../services/chat";
+import { CardMessage } from "./CardMessage";
+import { ChatHeader } from "./ChatHeader";
+import { useDispatch } from "react-redux";
+import { ChatReducerType, chatActions } from "../../../store/reducers/chatReducer";
+import { useSelector } from "react-redux";
+
 export function ChatConversation() {
+
+	const dispatch = useDispatch();
+
+	const { receiver, messages } = useSelector((state: any) => state.chat) as ChatReducerType;
+
+	const [{
+		data: personMessages,
+		isLoading,
+	}, searchMessages] = useFetch(
+		getAllMessagesByReceiverRequest, 
+		null, 
+		false, 
+		null,
+		null,
+		response => {
+			if (response.ok && response.data) {
+				dispatch(chatActions.setMessages(response.data.messages));
+			}
+		}
+	);
+
+	useEffect(() => {
+		if (receiver) {
+			searchMessages(receiver);
+		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [receiver]);
+
     return (
-        <ul id="chat">
-				<li className="you">
-					<div className="entete">
-						<span className="status green"></span>
-						<h2>Vincent</h2>
-						<h3>10:12AM, Today</h3>
-					</div>
-					<div className="triangle"></div>
-					<div className="message">
-						Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
-					</div>
-				</li>
-				<li className="me">
-					<div className="entete">
-						<h3>10:12AM, Today</h3>
-						<h2>Vincent</h2>
-						<span className="status blue"></span>
-					</div>
-					<div className="triangle"></div>
-					<div className="message">
-						Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
-					</div>
-				</li>
-				<li className="me">
-					<div className="entete">
-						<h3>10:12AM, Today</h3>
-						<h2>Vincent</h2>
-						<span className="status blue"></span>
-					</div>
-					<div className="triangle"></div>
-					<div className="message">
-						OK
-					</div>
-				</li>
-				<li className="you">
-					<div className="entete">
-						<span className="status green"></span>
-						<h2>Vincent</h2>
-						<h3>10:12AM, Today</h3>
-					</div>
-					<div className="triangle"></div>
-					<div className="message">
-						Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
-					</div>
-				</li>
-				<li className="me">
-					<div className="entete">
-						<h3>10:12AM, Today</h3>
-						<h2>Vincent</h2>
-						<span className="status blue"></span>
-					</div>
-					<div className="triangle"></div>
-					<div className="message">
-						Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
-					</div>
-				</li>
-				<li className="me">
-					<div className="entete">
-						<h3>10:12AM, Today</h3>
-						<h2>Vincent</h2>
-						<span className="status blue"></span>
-					</div>
-					<div className="triangle"></div>
-					<div className="message">
-						OK
-					</div>
-				</li>
+		<>
+			<ChatHeader 
+				name={personMessages?.name} 
+				messagesCount={messages?.length ?? 0} 
+			/>
+			<ul id="chat">
+				{
+					personMessages 
+						&& 
+					!isLoading
+						&&
+					messages?.map((item, index) => (
+							<CardMessage
+								date={new Date()}
+								message={item.message}
+								sender={item.sender}
+								type="TEXT"
+								username={item.name}
+								key={index}
+							/>
+					))
+				}
 			</ul>
+		</>
     );
 }

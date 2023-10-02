@@ -3,10 +3,10 @@ import { useAuthentication } from "../../../hooks/useAuthentication";
 
 type CardMessageProps = {
     type: 'FILE' | 'TEXT';
-    message: string;
-    sender: string;
+    message: string | null;
+    sender?: string | null;
     date: Date;
-    username: string;
+    username?: string | null;
 };
 
 export function CardMessage({

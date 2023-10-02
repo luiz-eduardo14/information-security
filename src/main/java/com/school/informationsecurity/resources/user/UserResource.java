@@ -10,6 +10,8 @@ import com.school.informationsecurity.services.user.dto.UserDTO;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
@@ -20,5 +22,10 @@ public class UserResource {
     @GetMapping("/me")
     public UserDTO getUser() {
         return userService.getUser(SecurityUtils.getCurrentUsername());
+    }
+
+    @GetMapping("/all")
+    public List<UserDTO> getUserList() {
+        return userService.getUserList();
     }
 }

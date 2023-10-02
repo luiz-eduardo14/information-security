@@ -1,8 +1,12 @@
 package com.school.informationsecurity.resources.chat;
 
 import java.security.Principal;
+import java.security.Security;
+import java.util.Optional;
 
-import org.springframework.messaging.Message;
+import com.school.informationsecurity.common.SecurityUtils;
+import com.school.informationsecurity.services.chat.dto.MessageRequestDTO;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
@@ -18,8 +22,12 @@ public class ChatSocketResoure {
     
     @MessageMapping("/chat")
     @SendToUser("/topic/chat")
-    public String chat(Message message, Principal principal) {
-        System.out.println("username: " + principal.getName());
-        return "";
+    public MessageRequestDTO chat(MessageRequestDTO message) {
+        return message;
+    }
+
+    @MessageMapping("/chat/{username}")
+    public void chat(MessageRequestDTO message, @DestinationVariable String username) {
+        this.messagingTemplate.convertAndSendToUser(username, "/topic/chat", message);
     }
 }
