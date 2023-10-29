@@ -32,6 +32,11 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsService userDetailsService;
 
+    private final String[] AUTH_WHITELIST = {
+        "/api/auth/**",
+        "/error"
+    };
+
     @Bean
     SecurityFilterChain filterChain(
         HttpSecurity httpSecurity, 
@@ -40,8 +45,7 @@ public class SecurityConfiguration {
     ) throws Exception {
         return httpSecurity
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/auth/signin").permitAll()
-                        .requestMatchers("api/auth/signup").permitAll()
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
