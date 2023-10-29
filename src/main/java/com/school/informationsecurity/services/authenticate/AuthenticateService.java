@@ -35,6 +35,10 @@ public class AuthenticateService {
 
     public JwtResponseDTO signup(UserAuthenticationDTO dto) throws Exception {
 
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
 
         kpg.initialize(2048);
