@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class CryptographyService {
     public static final String SYMMETRIC_ALGORITHM = "AES";
     public static final String ASYMMETRIC_ALGORITHM = "RSA";
+    public static final int KEY_SIZE = 2048;
 
     public byte[] encrypt(byte[] message, Key key, String algorithm) throws Exception {
         Cipher cipher = Cipher.getInstance(algorithm);

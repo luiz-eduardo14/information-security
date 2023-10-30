@@ -36,8 +36,7 @@ public class AuthenticateService {
 
     KeyPairGenerator kpg = KeyPairGenerator.getInstance(CryptographyService.ASYMMETRIC_ALGORITHM);
 
-    int KEY_SIZE = 2048;
-    kpg.initialize(KEY_SIZE);
+    kpg.initialize(CryptographyService.KEY_SIZE);
 
     KeyPair kp = kpg.genKeyPair();
     Key publicKey = kp.getPublic();
