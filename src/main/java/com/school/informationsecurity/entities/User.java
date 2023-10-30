@@ -49,9 +49,9 @@ public class User implements UserDetails {
     private Role role = Role.GENERIC;
     @Enumerated(EnumType.STRING)
     private Status status = Status.INACTIVE;
-    @Column(name = "public_key")
+    @Column(name = "public_key", length = 2048)
     private byte[] publicKey;
-    @Column(name = "private_key")
+    @Column(name = "private_key", length = 2048)
     private byte[] privateKey;
 
     @Override
