@@ -1,16 +1,5 @@
 package com.school.informationsecurity.services.authenticate;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.security.*;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
-
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.school.informationsecurity.entities.Role;
 import com.school.informationsecurity.entities.Status;
 import com.school.informationsecurity.entities.User;
@@ -18,73 +7,76 @@ import com.school.informationsecurity.repository.UserRepository;
 import com.school.informationsecurity.security.JwtTokenUtil;
 import com.school.informationsecurity.services.authenticate.dto.JwtResponseDTO;
 import com.school.informationsecurity.services.authenticate.dto.UserAuthenticationDTO;
-
+import com.school.informationsecurity.services.cryptography.CryptographyService;
+import java.security.Key;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import lombok.RequiredArgsConstructor;
-
-import javax.crypto.*;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticateService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtTokenUtil jwtService;
-    private final AuthenticationManager authenticationManager;
 
-    public JwtResponseDTO signup(UserAuthenticationDTO dto) throws Exception {
+  private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final JwtTokenUtil jwtService;
+  private final AuthenticationManager authenticationManager;
+  private final CryptographyService cryptographyService;
 
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("Email already exists");
-        }
+  public JwtResponseDTO signup(UserAuthenticationDTO dto) throws Exception {
 
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-
-        kpg.initialize(2048);
-
-        KeyPair kp = kpg.genKeyPair();
-        Key publicKey = kp.getPublic();
-        Key privateKey = kp.getPrivate();
-
-        String passwordHash = passwordEncoder.encode(dto.getPassword());
-
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-
-        Key keyPassword = this.generateKey(passwordHash);
-
-        cipher.init(Cipher.ENCRYPT_MODE, keyPassword);
-
-        byte[] encryptedPrivateKey = cipher.doFinal(privateKey.getEncoded());
-
-        User user = User.builder()
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
-                .email(dto.getEmail()).password(passwordEncoder.encode(dto.getPassword()))
-                .status(Status.ACTIVE)
-                .publicKey(publicKey.getEncoded())
-                .privateKey(encryptedPrivateKey)
-                .role(Role.USER)
-                .build();
-        userRepository.save(user);
-        String jwt = jwtService.generateToken(user);
-        return JwtResponseDTO.builder().token(jwt).build();
+    if (userRepository.existsByEmail(dto.getEmail())) {
+      throw new IllegalArgumentException("Email already exists");
     }
 
-    public JwtResponseDTO signin(UserAuthenticationDTO dto) {
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
-        User user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid email"));
-        String jwt = jwtService.generateToken(user);
-        return JwtResponseDTO.builder().token(jwt).build();
-    }
+    KeyPairGenerator kpg = KeyPairGenerator.getInstance(CryptographyService.ASYMMETRIC_ALGORITHM);
 
-    private Key generateKey(String value) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        KeySpec spec = new PBEKeySpec(value.toCharArray(), "salt".getBytes(StandardCharsets.UTF_8), 65536, 256);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+    int KEY_SIZE = 2048;
+    kpg.initialize(KEY_SIZE);
 
-        return new SecretKeySpec(factory.generateSecret(spec)
-                .getEncoded(), "AES");
-    }
+    KeyPair kp = kpg.genKeyPair();
+    Key publicKey = kp.getPublic();
+    Key privateKey = kp.getPrivate();
+
+    String passwordHash = passwordEncoder.encode(dto.getPassword());
+
+    Key secretKey = cryptographyService.generateSymmetricKey(passwordHash);
+
+    byte[] encryptedPrivateKey = this.cryptographyService.encrypt(privateKey.getEncoded(),
+        secretKey, CryptographyService.SYMMETRIC_ALGORITHM);
+
+    User user = User.builder()
+        .firstName(dto.getFirstName())
+        .lastName(dto.getLastName())
+        .email(dto.getEmail())
+        .password(passwordHash)
+        .status(Status.ACTIVE)
+        .publicKey(publicKey.getEncoded())
+        .privateKey(encryptedPrivateKey)
+        .role(Role.USER)
+        .build();
+    userRepository.save(user);
+    String jwt = jwtService.generateToken(user);
+    return JwtResponseDTO.builder().token(jwt).build();
+  }
+
+  public JwtResponseDTO signin(UserAuthenticationDTO dto) {
+    authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+    User user = userRepository.findByEmail(dto.getEmail())
+        .orElseThrow(() -> new IllegalArgumentException("Invalid email"));
+    String jwt = jwtService.generateToken(user);
+    return JwtResponseDTO.builder().token(jwt).build();
+  }
+
+  public Pair<byte[], byte[]> getUserKeys(byte[] publicKey, byte[] privateKey, String passwordHash) throws Exception {
+    Key secretKey = cryptographyService.generateSymmetricKey(passwordHash);
+    byte[] decryptedPrivateKey = this.cryptographyService.decrypt(privateKey, secretKey, CryptographyService.SYMMETRIC_ALGORITHM);
+    return Pair.of(publicKey, decryptedPrivateKey);
+  }
 }
