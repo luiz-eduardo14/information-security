@@ -2,6 +2,7 @@ package com.school.informationsecurity.entities;
 
 import com.school.informationsecurity.services.chat.dto.MessageResponseDTO;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -18,19 +19,21 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "message")
+    @Column(name = "message", length = 2048)
     private byte[] message;
 
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private MESSAGE_TYPE messageType;
 
-    private LocalDate date;
+    private LocalDateTime date;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "receiver_id", nullable = false)
     private User receiver;
 
     enum MESSAGE_TYPE {
