@@ -1,5 +1,6 @@
 package com.school.informationsecurity.services.chat.dto;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,4 +14,5 @@ public class MessageResponseDTO {
     private String sender;
     private String message;
     private String name;
+    private LocalDateTime date;
 }
