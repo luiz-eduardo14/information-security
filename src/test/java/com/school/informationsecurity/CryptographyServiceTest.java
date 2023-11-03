@@ -23,14 +23,13 @@ public class CryptographyServiceTest {
   @Test
   @DisplayName("Deve gerar chave simétrica e criptografar e descriptografar com a mesma chave")
   public void shouldEncryptAndDecryptWithSymmetricKey() throws Exception {
-    var text = "Teste";
-    var keyAES = cryptographyService.generateSymmetricKey(text);
-    var encryptedText = cryptographyService.encrypt(text.getBytes(StandardCharsets.UTF_8), keyAES,
+    String text = "Teste";
+    Key keyAES = cryptographyService.generateSymmetricKey(text);
+    byte[] encryptedText = cryptographyService.encrypt(text.getBytes(StandardCharsets.UTF_8), keyAES,
         CryptographyService.SYMMETRIC_ALGORITHM);
-    var decryptedText = new String(cryptographyService.decrypt(encryptedText, keyAES,
+    String decryptedText = new String(cryptographyService.decrypt(encryptedText, keyAES,
         CryptographyService.SYMMETRIC_ALGORITHM));
 
-    assertNotEquals(text, encryptedText);
     assertEquals(text, decryptedText);
   }
 
@@ -44,14 +43,13 @@ public class CryptographyServiceTest {
     Key publicKey = kp.getPublic();
     Key privateKey = kp.getPrivate();
 
-    var encryptedText = cryptographyService.encrypt(text.getBytes(StandardCharsets.UTF_8),
+    byte[] encryptedText = cryptographyService.encrypt(text.getBytes(StandardCharsets.UTF_8),
         publicKey,
         CryptographyService.ASYMMETRIC_ALGORITHM);
 
-    var decryptedText = new String(cryptographyService.decrypt(encryptedText, privateKey,
+    String decryptedText = new String(cryptographyService.decrypt(encryptedText, privateKey,
         CryptographyService.ASYMMETRIC_ALGORITHM));
 
-    assertNotEquals(text, encryptedText);
     assertEquals(text, decryptedText);
   }
 
