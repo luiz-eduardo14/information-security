@@ -10,11 +10,12 @@ import java.util.List;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-    @Query("""
-        SELECT m.message, m.sender.email, m.receiver.email, m.sender.firstName
-            FROM Message m
-                WHERE m.sender.email = :sender AND m.receiver.email = :receiver
-        ORDER BY m.date
-""")
-    List<Message> getAllMessagesBySender(String sender, String receiver);
+    @Query(value = """
+                select m, u, u2 from Message m
+                    left join User u on m.sender.id = u.id
+                    left join User u2 on m.receiver.id = u2.id
+                        where (u.email = :sender and u2.email = :receiver) or (u.email = :receiver and u2.email = :sender)
+                    order by m.date desc
+        """)
+    List<Message> getAllMessagesBySenderAndReceiver(String sender, String receiver);
 }

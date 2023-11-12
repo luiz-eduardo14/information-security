@@ -1,5 +1,7 @@
 package com.school.informationsecurity.entities;
 
+import jakarta.persistence.Index;
+import jakarta.persistence.SequenceGenerator;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -29,10 +31,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = "users",
+        indexes = {
+       @Index(name = "idx_email", columnList = "email", unique = true)
+    }
+)
+@SequenceGenerator(name = "seq_users", sequenceName = "seq_users", allocationSize = 1)
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)    
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Nonnull
     private String password;
@@ -49,9 +56,9 @@ public class User implements UserDetails {
     private Role role = Role.GENERIC;
     @Enumerated(EnumType.STRING)
     private Status status = Status.INACTIVE;
-    @Column(name = "public_key")
+    @Column(name = "public_key", length = 2048)
     private byte[] publicKey;
-    @Column(name = "private_key")
+    @Column(name = "private_key", length = 2048)
     private byte[] privateKey;
 
     @Override

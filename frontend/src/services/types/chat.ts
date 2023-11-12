@@ -9,6 +9,7 @@ export interface MessageRequestDTO {
     message: string;
     receiver: string;
     name: string;
+    date: string;
 }
 
 export interface ChatResponseDTO {
