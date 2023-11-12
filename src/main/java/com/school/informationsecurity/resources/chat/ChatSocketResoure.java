@@ -20,14 +20,24 @@ public class ChatSocketResoure {
   @MessageMapping("/chat")
   @SendToUser("/topic/chat")
   public MessageRequestDTO chat(MessageRequestDTO message) throws Exception {
-    chatService.sendMessage(message.getSender(), message.getReceiver(), message.getMessage());
+    chatService.sendMessage(
+        message.getSender(),
+        message.getReceiver(),
+        message.getMessage(),
+        message.getSignMessage()
+    );
     return message;
   }
 
   @MessageMapping("/chat/{username}")
   public void chat(MessageRequestDTO message, @DestinationVariable String username)
       throws Exception {
-    this.chatService.sendMessage(message.getSender(), username, message.getMessage());
+    this.chatService.sendMessage(
+        message.getSender(),
+        username,
+        message.getMessage(),
+        message.getSignMessage()
+    );
     this.messagingTemplate.convertAndSendToUser(username, "/topic/chat", message);
   }
 }

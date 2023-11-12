@@ -1,9 +1,12 @@
 package com.school.informationsecurity.services.cryptography;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -34,5 +37,11 @@ public class CryptographyService {
         SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         byte[] key = keyFactory.generateSecret(keySpec).getEncoded();
         return new SecretKeySpec(key, SYMMETRIC_ALGORITHM);
+    }
+
+    public String generateHash(String message, String algorithm) throws Exception {
+        var digest = MessageDigest.getInstance(algorithm);
+        var hash = digest.digest(message.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(hash);
     }
 }

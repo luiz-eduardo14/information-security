@@ -15,4 +15,5 @@ public class MessageResponseDTO {
     private String message;
     private String name;
     private LocalDateTime date;
+    private Boolean valid;
 }

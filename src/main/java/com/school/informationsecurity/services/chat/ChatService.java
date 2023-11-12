@@ -34,6 +34,7 @@ public class ChatService {
         this.messageRepository.getAllMessagesBySenderAndReceiver(sender, receiver)
             .stream()
             .map(this::convertToMessageResponseDTO)
+            .filter(MessageResponseDTO::getValid)
             .toList();
 
     return ChatResponseDTO.builder()
@@ -43,7 +44,7 @@ public class ChatService {
         .build();
   }
 
-  public void sendMessage(String sender, String receiver, String message)
+  public void sendMessage(String sender, String receiver, String message, Boolean signMessage)
       throws Exception {
     Optional<User> senderUser = this.userRepository.findByEmail(sender);
     Optional<User> receiverUser = this.userRepository.findByEmail(receiver);
@@ -61,13 +62,22 @@ public class ChatService {
           message.getBytes(StandardCharsets.UTF_8), publicKey,
           CryptographyService.ASYMMETRIC_ALGORITHM);
 
+      String messageHash = null;
+
+      if (signMessage) {
+        messageHash = this.cryptographyService.generateHash(message, "SHA-256");
+      }
+
       Message messageEntity = Message.builder()
           .message(messageEncryped)
           .sender(senderUserNotOptional)
           .receiver(receiverUserNotOptional)
+          .messageHash(messageHash)
           .build();
 
       this.messageRepository.save(messageEntity);
+    } else {
+      throw new RuntimeException("Sender or receiver not found");
     }
   }
 
@@ -81,6 +91,14 @@ public class ChatService {
     try {
       byte[] messageDecrypted = this.decryptMessage(message.getMessage(),
           message.getReceiver().getPrivateKey(), message.getReceiver().getPassword());
+
+      if (message.getMessageHash() != null) {
+        String messageHash = this.cryptographyService.generateHash(new String(messageDecrypted), "SHA-256");
+        messageResponseDTO.setValid(messageHash.equals(message.getMessageHash()));
+      } else {
+        messageResponseDTO.setValid(true);
+      }
+
       messageResponseDTO.setMessage(new String(messageDecrypted));
       return messageResponseDTO;
     } catch (Exception e) {

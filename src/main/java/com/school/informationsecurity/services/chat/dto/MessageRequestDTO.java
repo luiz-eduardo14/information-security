@@ -8,4 +8,5 @@ public class MessageRequestDTO {
     private String receiver;
     private String message;
     private String name;
+    private Boolean signMessage;
 }

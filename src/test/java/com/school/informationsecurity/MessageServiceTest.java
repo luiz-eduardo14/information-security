@@ -59,7 +59,7 @@ public class MessageServiceTest {
   @Order(1)
   public void shouldSendMessage() throws Exception {
     var message = "Teste";
-    chatService.sendMessage(FIRST_USER_EMAIL, SECOND_USER_EMAIL, message);
+    chatService.sendMessage(FIRST_USER_EMAIL, SECOND_USER_EMAIL, message, false);
   }
 
   @Test
@@ -67,8 +67,8 @@ public class MessageServiceTest {
   @Order(2)
   public void shouldReceiveMessage() throws Exception {
     var message = "Teste";
-    chatService.sendMessage(FIRST_USER_EMAIL, SECOND_USER_EMAIL, message);
-    chatService.sendMessage(SECOND_USER_EMAIL, FIRST_USER_EMAIL, message);
+    chatService.sendMessage(FIRST_USER_EMAIL, SECOND_USER_EMAIL, message, false);
+    chatService.sendMessage(SECOND_USER_EMAIL, FIRST_USER_EMAIL, message, false);
 
     var chatResponseDTO = chatService.getAllMessagesBySenderAndReceiver(FIRST_USER_EMAIL, SECOND_USER_EMAIL);
 
@@ -80,9 +80,9 @@ public class MessageServiceTest {
   @Order(3)
   public void shouldReceiveMessageOnlyFromSender() throws Exception {
     var message = "Teste";
-    chatService.sendMessage(FIRST_USER_EMAIL, SECOND_USER_EMAIL, message);
-    chatService.sendMessage(SECOND_USER_EMAIL, FIRST_USER_EMAIL, message);
-    chatService.sendMessage(THIRD_USER_EMAIL, FIRST_USER_EMAIL, message);
+    chatService.sendMessage(FIRST_USER_EMAIL, SECOND_USER_EMAIL, message, false);
+    chatService.sendMessage(SECOND_USER_EMAIL, FIRST_USER_EMAIL, message, false);
+    chatService.sendMessage(THIRD_USER_EMAIL, FIRST_USER_EMAIL, message, false);
 
     var chatResponseDTO = chatService.getAllMessagesBySenderAndReceiver(FIRST_USER_EMAIL, SECOND_USER_EMAIL);
 

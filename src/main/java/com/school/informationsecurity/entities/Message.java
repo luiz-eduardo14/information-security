@@ -36,6 +36,9 @@ public class Message {
     @JoinColumn(name = "receiver_id", nullable = false)
     private User receiver;
 
+    @Column(name = "message_hash")
+    private String messageHash;
+
     enum MESSAGE_TYPE {
         TEXT,
         FILE
