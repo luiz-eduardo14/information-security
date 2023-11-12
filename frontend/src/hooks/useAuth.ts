@@ -24,16 +24,18 @@ export default function useAuth(): useAuthReturn {
     const saveToken = useCallback((token: string) => {
         localStorage.setItem(Storage.TOKEN, token);
         setToken(token);
+        fetchMe(token);
+        navigate('/chat');
     }, [setToken]);
 
     const navigate = useNavigate();
 
-    const logout = useCallback(() => {
+    const logout = useCallback(async () => {
         localStorage.removeItem(Storage.TOKEN);
         setAuthenticated(false);
         setToken(null);
         setUser(null);
-        navigate('/login');
+        navigate('/signin');
     }, [navigate]);
         
     const fetchMe = useCallback(async (tokenParam?: string | null) => {
@@ -58,13 +60,6 @@ export default function useAuth(): useAuthReturn {
         fetchMe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    useEffect(() => {
-        if (token && !authenticated && !ready) {
-            fetchMe(token);
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [token, ready]);
 
     return {
         token,

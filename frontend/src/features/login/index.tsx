@@ -1,7 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form"
 import "../style/form/style.css"
 import { FormTextInput } from "../../components/FormTextInput"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Toast } from "../../utils/Toast";
 import useFetch from "../../hooks/useFetch";
 import { loginRequest } from "../../services/auth";
@@ -11,11 +11,17 @@ export function Login() {
 
     const form = useForm<Omit<RegisterFormFields, "firstName" | "lastName">>();
 
+    const navigate = useNavigate();
+
     const {
         saveToken,
     } = useAuthentication();
 
-    const [, login] = useFetch(loginRequest, null, false, null, 
+    const [, login] = useFetch(
+        loginRequest, 
+        null,
+         false, 
+         null, 
         () => Toast.showErrorMessage("Invalid credentials"), 
         response => {
             if (!response?.data?.token) {
@@ -23,6 +29,7 @@ export function Login() {
                 return;
             }
             saveToken(response.data.token);
+            navigate('/chat');
             Toast.showSuccessMessage('Logged in successfully');
         }
     );

@@ -8,14 +8,13 @@ type PrivateRouterProps = PropsWithChildren<{
 
 export function PrivateRouter({ component }: PrivateRouterProps) {
 
-    const { authenticated, logout, ready } = useAuthentication();
+    const { authenticated, ready, token } = useAuthentication();
 
     if (!ready) {
         return null;
     }
 
-    if (!authenticated) {
-        logout();
+    if (!authenticated && token) {
         return <Navigate to="/signin" />;
     }
 
