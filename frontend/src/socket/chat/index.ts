@@ -13,4 +13,8 @@ function chatEvent(socketResponse: IMessage): void {
     }));
 }
 
-export default chatEvent;
+export default {
+    callback: chatEvent,
+    eventSubscribeMapping: '/user/topic/chat',
+    eventMessageMapping: '/app/chat',
+}

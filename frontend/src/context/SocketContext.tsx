@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
 import { useAuthentication } from '../hooks/useAuthentication';
 import { Client } from '@stomp/stompjs';
-import socketEvents from '../socket/events'
+import socketEvents from '../socket';
 
 const url = import.meta.env.VITE_SOCKET_URL || '';
 
